@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WhatsApp Crawler Admin</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">W</span>
+          <div>
+            <strong>WhatsApp Crawler</strong>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-item active" data-view="dashboard">Dashboard</button>
+          <button class="nav-item" data-view="new-task">New Task</button>
+          <button class="nav-item" data-view="results">All Results</button>
+          <button class="nav-item" data-view="history">Task History</button>
+          <button class="nav-item" data-view="manual">Manual Tools</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1 id="page-title">Dashboard</h1>
+            <p id="page-subtitle">Live crawler operations</p>
+          </div>
+          <div class="live-state">
+            <span id="live-dot" class="live-dot"></span>
+            <span id="live-label">Connecting</span>
+          </div>
+        </header>
+
+        <section id="dashboard" class="view active">
+          <div class="hero-panel">
+            <div>
+              <span class="eyebrow">Active Task</span>
+              <h2 id="active-task-name">No active task</h2>
+              <p id="active-task-detail">Create or resume a task to begin collection.</p>
+            </div>
+            <div class="hero-actions">
+              <button id="active-pause" class="icon-btn" title="Pause task">Pause</button>
+              <button id="active-resume" class="icon-btn primary" title="Resume task">Resume</button>
+              <button id="active-cancel" class="icon-btn danger" title="Cancel task">Cancel</button>
+            </div>
+          </div>
+
+          <div class="progress-panel">
+            <div class="progress-meta">
+              <span id="progress-label">0 of 0 completed</span>
+              <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+            <div id="current-phone" class="current-phone">Current number: none</div>
+          </div>
+
+          <div class="browser-panel">
+            <div>
+              <span class="eyebrow">Browser</span>
+              <strong id="browser-state">Not started</strong>
+            </div>
+            <p id="browser-message">WhatsApp browser has not started.</p>
+          </div>
+
+          <div class="metrics-grid">
+            <button class="metric" data-result-filter=""><span>Total</span><strong id="metric-total">0</strong></button>
+            <button class="metric" data-result-filter=""><span>Completed</span><strong id="metric-completed">0</strong></button>
+            <button class="metric success" data-result-filter="success"><span>Found</span><strong id="metric-success">0</strong></button>
+            <button class="metric warning" data-result-filter="hidden_dp"><span>Hidden DP</span><strong id="metric-hidden">0</strong></button>
+            <button class="metric neutral" data-result-filter="no_whatsapp"><span>No WhatsApp</span><strong id="metric-no-wa">0</strong></button>
+            <button class="metric danger" data-result-filter="error"><span>Errors</span><strong id="metric-error">0</strong></button>
+          </div>
+
+          <div class="section-head">
+            <h2>Recent Tasks</h2>
+            <button id="refresh-tasks" class="text-btn">Refresh</button>
+          </div>
+          <div id="task-list" class="task-list"></div>
+        </section>
+
+        <section id="new-task" class="view">
+          <div class="split">
+            <div class="panel">
+              <div class="section-head compact">
+                <h2>Upload Task</h2>
+                <span id="file-state" class="status-pill">No file</span>
+              </div>
+              <label class="field-label" for="task-name">Task name</label>
+              <input id="task-name" class="input" value="Customer profile collection" />
+
+              <div id="dropzone" class="dropzone">
+                <input id="file-input" type="file" accept=".txt,.csv,text/plain,text/csv" hidden />
+                <div class="drop-icon">+</div>
+                <h3>Drop TXT or CSV</h3>
+                <p>or choose a file</p>
+              </div>
+
+              <div class="form-row">
+                <div>
+                  <label class="field-label" for="speed-select">Speed</label>
+                  <select id="speed-select" class="input">
+                    <option value="balanced">Balanced</option>
+                    <option value="safe">Safe</option>
+                    <option value="fast">Fast</option>
+                  </select>
+                </div>
+                <label class="check-row">
+                  <input id="skip-checked" type="checkbox" checked />
+                  <span>Skip checked</span>
+                </label>
+              </div>
+
+              <label class="field-label" for="max-errors">Stop after errors</label>
+              <input id="max-errors" class="input" type="number" min="0" value="0" />
+              <p class="field-help">Use 0 to keep running even if some numbers fail.</p>
+
+              <button id="collect-data" class="primary-btn" disabled>Collect Data</button>
+            </div>
+
+            <div class="panel">
+              <div class="section-head compact">
+                <h2>Preview</h2>
+                <span id="preview-count" class="status-pill">0 numbers</span>
+              </div>
+              <div class="preview-stats">
+                <div><span>Duplicates</span><strong id="duplicates-count">0</strong></div>
+                <div><span>Invalid rows</span><strong id="invalid-count">0</strong></div>
+                <div><span>CSV column</span><strong id="column-name">-</strong></div>
+              </div>
+              <div id="preview-list" class="preview-list empty">No file parsed yet.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="results" class="view">
+          <div class="panel">
+            <div class="results-toolbar">
+              <select id="results-task" class="input"></select>
+              <select id="status-filter" class="input">
+                <option value="">All statuses</option>
+                <option value="success">Success</option>
+                <option value="hidden_dp">Hidden DP</option>
+                <option value="no_whatsapp">No WhatsApp</option>
+                <option value="error">Error</option>
+                <option value="pending">Pending</option>
+              </select>
+              <input id="result-search" class="input" placeholder="Search phone or name" />
+              <button id="export-results" class="text-btn">Export View</button>
+            </div>
+            <div class="bulkbar">
+              <label class="check-row compact"><input id="select-all-results" type="checkbox" /> <span>Select visible</span></label>
+              <button id="copy-selected" class="text-btn">Copy Selected</button>
+              <button id="retry-selected" class="text-btn">Retry Selected</button>
+              <button id="retry-errors" class="text-btn">Retry Errors</button>
+            </div>
+            <div class="table-wrap">
+              <table class="result-table">
+                <thead>
+                  <tr>
+                    <th class="select-col"></th>
+                    <th>Image</th>
+                    <th>Phone</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th>Error</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="history" class="view">
+          <div class="panel">
+            <div class="section-head compact">
+              <h2>Task History</h2>
+              <button id="refresh-history" class="text-btn">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table class="result-table">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Source</th>
+                    <th>Speed</th>
+                    <th>Progress</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="manual" class="view">
+          <div class="split">
+            <div class="panel">
+              <h2>Single Lookup</h2>
+              <label class="field-label" for="single-phone">Phone number</label>
+              <input id="single-phone" class="input" placeholder="+8801..." />
+              <button id="single-run" class="primary-btn">Collect Single</button>
+            </div>
+            <div class="panel">
+              <h2>Range Crawl</h2>
+              <label class="field-label" for="range-name">Task name</label>
+              <input id="range-name" class="input" value="Range crawl" />
+              <div class="form-row three">
+                <div>
+                  <label class="field-label" for="range-prefix">Prefix</label>
+                  <input id="range-prefix" class="input" placeholder="+880188220" />
+                </div>
+                <div>
+                  <label class="field-label" for="range-start">Start</label>
+                  <input id="range-start" class="input" placeholder="0000" />
+                </div>
+                <div>
+                  <label class="field-label" for="range-end">End</label>
+                  <input id="range-end" class="input" placeholder="0099" />
+                </div>
+              </div>
+              <button id="range-run" class="primary-btn">Create Range Task</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast-stack" class="toast-stack"></div>
+    <div id="details-modal" class="modal-overlay" hidden>
+      <div class="modal-card">
+        <div class="modal-head">
+          <div>
+            <h2>Profile Details</h2>
+            <p id="details-phone"></p>
+          </div>
+          <button id="details-close" class="modal-close">Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-images">
+            <div>
+              <span class="detail-label">Profile Image</span>
+              <img id="details-image" class="detail-img" alt="" />
+            </div>
+            <div id="cover-wrap">
+              <span class="detail-label">Cover / Public Image</span>
+              <img id="details-cover" class="detail-img" alt="" />
+            </div>
+          </div>
+          <div id="details-content" class="details-content"></div>
+        </div>
+      </div>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

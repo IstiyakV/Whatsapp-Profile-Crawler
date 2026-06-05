@@ -1,0 +1,3 @@
+# Put one phone number per line when using local manual input.
+# Do not commit real phone numbers.
+# Example format: +<country-code><number>
