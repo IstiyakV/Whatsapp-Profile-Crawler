@@ -17,19 +17,57 @@ The app runs from the browser. Users can drag and drop a `.txt` or `.csv` number
 - Server-Sent Events
 - Static HTML/CSS/JavaScript admin UI
 
-## Setup
+## Setup on Windows
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m playwright install chromium
+```
+
+You can also use the helper script:
 
 ```powershell
 .\scripts\setup.ps1
 ```
 
-## Run
+## Setup on Linux
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m playwright install chromium
+```
+
+If your Linux server is missing browser dependencies, run:
+
+```bash
+python -m playwright install-deps chromium
+```
+
+## Run on Windows
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+uvicorn app.main:app --host 127.0.0.1 --port 3030
+```
+
+You can also use:
 
 ```powershell
 .\scripts\run-dev.ps1
 ```
 
-Open:
+## Run on Linux
+
+```bash
+source .venv/bin/activate
+uvicorn app.main:app --host 127.0.0.1 --port 3030
+```
+
+Then open:
 
 ```text
 http://localhost:3030
