@@ -67,20 +67,3 @@ If no known column exists, it uses the first column.
 - Fast: shorter delays, higher block risk
 
 WhatsApp can rate-limit or block suspicious automation. Use Safe or Balanced for larger lists.
-
-## GitHub Safety
-
-These are ignored and should not be committed:
-
-```text
-.env
-.venv/
-data/
-sessions/
-images/
-logs/
-uploads/
-numbers.txt
-*.csv
-*.db
-```
